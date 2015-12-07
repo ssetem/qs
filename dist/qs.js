@@ -1,29 +1,31 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Qs = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+'use strict';
+
 // Load modules
 
-var Stringify = require('./stringify');
-var Parse = require('./parse');
+const Stringify = require('./stringify');
+const Parse = require('./parse');
 
 
 // Declare internals
 
-var internals = {};
+const internals = {};
 
 
-module.exports = {
-    stringify: Stringify,
-    parse: Parse
-};
+exports.stringify = Stringify;
+exports.parse = Parse;
 
 },{"./parse":2,"./stringify":3}],2:[function(require,module,exports){
+'use strict';
+
 // Load modules
 
-var Utils = require('./utils');
+const Utils = require('./utils');
 
 
 // Declare internals
 
-var internals = {
+const internals = {
     delimiter: '&',
     depth: 5,
     arrayLimit: 20,
@@ -37,12 +39,12 @@ var internals = {
 
 internals.parseValues = function (str, options) {
 
-    var obj = {};
-    var parts = str.split(options.delimiter, options.parameterLimit === Infinity ? undefined : options.parameterLimit);
+    const obj = {};
+    const parts = str.split(options.delimiter, options.parameterLimit === Infinity ? undefined : options.parameterLimit);
 
-    for (var i = 0, il = parts.length; i < il; ++i) {
-        var part = parts[i];
-        var pos = part.indexOf(']=') === -1 ? part.indexOf('=') : part.indexOf(']=') + 1;
+    for (let i = 0; i < parts.length; ++i) {
+        const part = parts[i];
+        const pos = part.indexOf(']=') === -1 ? part.indexOf('=') : part.indexOf(']=') + 1;
 
         if (pos === -1) {
             obj[Utils.decode(part)] = '';
@@ -52,8 +54,8 @@ internals.parseValues = function (str, options) {
             }
         }
         else {
-            var key = Utils.decode(part.slice(0, pos));
-            var val = Utils.decode(part.slice(pos + 1));
+            const key = Utils.decode(part.slice(0, pos));
+            const val = Utils.decode(part.slice(pos + 1));
 
             if (!Object.prototype.hasOwnProperty.call(obj, key)) {
                 obj[key] = val;
@@ -74,18 +76,18 @@ internals.parseObject = function (chain, val, options) {
         return val;
     }
 
-    var root = chain.shift();
+    const root = chain.shift();
 
-    var obj;
+    let obj;
     if (root === '[]') {
         obj = [];
         obj = obj.concat(internals.parseObject(chain, val, options));
     }
     else {
         obj = options.plainObjects ? Object.create(null) : {};
-        var cleanRoot = root[0] === '[' && root[root.length - 1] === ']' ? root.slice(1, root.length - 1) : root;
-        var index = parseInt(cleanRoot, 10);
-        var indexString = '' + index;
+        const cleanRoot = root[0] === '[' && root[root.length - 1] === ']' ? root.slice(1, root.length - 1) : root;
+        const index = parseInt(cleanRoot, 10);
+        const indexString = '' + index;
         if (!isNaN(index) &&
             root !== cleanRoot &&
             indexString === cleanRoot &&
@@ -119,16 +121,16 @@ internals.parseKeys = function (key, val, options) {
 
     // The regex chunks
 
-    var parent = /^([^\[\]]*)/;
-    var child = /(\[[^\[\]]*\])/g;
+    const parent = /^([^\[\]]*)/;
+    const child = /(\[[^\[\]]*\])/g;
 
     // Get the parent
 
-    var segment = parent.exec(key);
+    let segment = parent.exec(key);
 
     // Stash the parent if it exists
 
-    var keys = [];
+    const keys = [];
     if (segment[1]) {
         // If we aren't using plain objects, optionally prefix keys
         // that would overwrite object prototype properties
@@ -145,7 +147,7 @@ internals.parseKeys = function (key, val, options) {
 
     // Loop through children appending to the array until we hit depth
 
-    var i = 0;
+    let i = 0;
     while ((segment = child.exec(key)) !== null && i < options.depth) {
 
         ++i;
@@ -189,15 +191,15 @@ module.exports = function (str, options) {
         return options.plainObjects ? Object.create(null) : {};
     }
 
-    var tempObj = typeof str === 'string' ? internals.parseValues(str, options) : str;
-    var obj = options.plainObjects ? Object.create(null) : {};
+    const tempObj = typeof str === 'string' ? internals.parseValues(str, options) : str;
+    let obj = options.plainObjects ? Object.create(null) : {};
 
     // Iterate over the keys and setup the new object
 
-    var keys = Object.keys(tempObj);
-    for (var i = 0, il = keys.length; i < il; ++i) {
-        var key = keys[i];
-        var newObj = internals.parseKeys(key, tempObj[key], options);
+    const keys = Object.keys(tempObj);
+    for (let i = 0; i < keys.length; ++i) {
+        const key = keys[i];
+        const newObj = internals.parseKeys(key, tempObj[key], options);
         obj = Utils.merge(obj, newObj, options);
     }
 
@@ -205,14 +207,16 @@ module.exports = function (str, options) {
 };
 
 },{"./utils":4}],3:[function(require,module,exports){
+'use strict';
+
 // Load modules
 
-var Utils = require('./utils');
+const Utils = require('./utils');
 
 
 // Declare internals
 
-var internals = {
+const internals = {
     delimiter: '&',
     arrayPrefixGenerators: {
         brackets: function (prefix, key) {
@@ -247,7 +251,7 @@ internals.stringify = function (obj, prefix, generateArrayPrefix, strictNullHand
     }
     else if (obj === null) {
         if (strictNullHandling) {
-            return encode ? Utils.encode(prefix) : prefix;
+            return prefix;
         }
 
         obj = '';
@@ -258,27 +262,28 @@ internals.stringify = function (obj, prefix, generateArrayPrefix, strictNullHand
         typeof obj === 'boolean') {
 
         if (encode) {
-            return [Utils.encode(prefix) + '=' + Utils.encode(obj)];
+            return [prefix + '=' + Utils.encode(obj)];
         }
         return [prefix + '=' + obj];
     }
 
-    var values = [];
+    let values = [];
 
     if (typeof obj === 'undefined') {
         return values;
     }
 
-    var objKeys;
+    let objKeys;
     if (Array.isArray(filter)) {
         objKeys = filter;
-    } else {
-        var keys = Object.keys(obj);
+    }
+    else {
+        const keys = Object.keys(obj);
         objKeys = sort ? keys.sort(sort) : keys;
     }
 
-    for (var i = 0, il = objKeys.length; i < il; ++i) {
-        var key = objKeys[i];
+    for (let i = 0; i < objKeys.length; ++i) {
+        const key = objKeys[i];
 
         if (skipNulls &&
             obj[key] === null) {
@@ -301,13 +306,13 @@ internals.stringify = function (obj, prefix, generateArrayPrefix, strictNullHand
 module.exports = function (obj, options) {
 
     options = options || {};
-    var delimiter = typeof options.delimiter === 'undefined' ? internals.delimiter : options.delimiter;
-    var strictNullHandling = typeof options.strictNullHandling === 'boolean' ? options.strictNullHandling : internals.strictNullHandling;
-    var skipNulls = typeof options.skipNulls === 'boolean' ? options.skipNulls : internals.skipNulls;
-    var encode = typeof options.encode === 'boolean' ? options.encode : internals.encode;
-    var sort = typeof options.sort === 'function' ? options.sort : null;
-    var objKeys;
-    var filter;
+    const delimiter = typeof options.delimiter === 'undefined' ? internals.delimiter : options.delimiter;
+    const strictNullHandling = typeof options.strictNullHandling === 'boolean' ? options.strictNullHandling : internals.strictNullHandling;
+    const skipNulls = typeof options.skipNulls === 'boolean' ? options.skipNulls : internals.skipNulls;
+    const encode = typeof options.encode === 'boolean' ? options.encode : internals.encode;
+    const sort = typeof options.sort === 'function' ? options.sort : null;
+    let objKeys;
+    let filter;
     if (typeof options.filter === 'function') {
         filter = options.filter;
         obj = filter('', obj);
@@ -316,7 +321,7 @@ module.exports = function (obj, options) {
         objKeys = filter = options.filter;
     }
 
-    var keys = [];
+    let keys = [];
 
     if (typeof obj !== 'object' ||
         obj === null) {
@@ -324,7 +329,7 @@ module.exports = function (obj, options) {
         return '';
     }
 
-    var arrayFormat;
+    let arrayFormat;
     if (options.arrayFormat in internals.arrayPrefixGenerators) {
         arrayFormat = options.arrayFormat;
     }
@@ -335,7 +340,7 @@ module.exports = function (obj, options) {
         arrayFormat = 'indices';
     }
 
-    var generateArrayPrefix = internals.arrayPrefixGenerators[arrayFormat];
+    const generateArrayPrefix = internals.arrayPrefixGenerators[arrayFormat];
 
     if (!objKeys) {
         objKeys = Object.keys(obj);
@@ -345,8 +350,8 @@ module.exports = function (obj, options) {
         objKeys.sort(sort);
     }
 
-    for (var i = 0, il = objKeys.length; i < il; ++i) {
-        var key = objKeys[i];
+    for (let i = 0; i < objKeys.length; ++i) {
+        const key = objKeys[i];
 
         if (skipNulls &&
             obj[key] === null) {
@@ -361,24 +366,32 @@ module.exports = function (obj, options) {
 };
 
 },{"./utils":4}],4:[function(require,module,exports){
+'use strict';
+
 // Load modules
 
 
 // Declare internals
 
-var internals = {};
-internals.hexTable = new Array(256);
-for (var h = 0; h < 256; ++h) {
-    internals.hexTable[h] = '%' + ((h < 16 ? '0' : '') + h.toString(16)).toUpperCase();
-}
+const internals = {};
+
+
+internals.hexTable = function () {
+
+    const array = new Array(256);
+    for (let i = 0; i < 256; ++i) {
+        array[i] = '%' + ((i < 16 ? '0' : '') + i.toString(16)).toUpperCase();
+    }
+
+    return array;
+}();
 
 
 exports.arrayToObject = function (source, options) {
 
-    var obj = options.plainObjects ? Object.create(null) : {};
-    for (var i = 0, il = source.length; i < il; ++i) {
+    const obj = options.plainObjects ? Object.create(null) : {};
+    for (let i = 0; i < source.length; ++i) {
         if (typeof source[i] !== 'undefined') {
-
             obj[i] = source[i];
         }
     }
@@ -418,10 +431,10 @@ exports.merge = function (target, source, options) {
         target = exports.arrayToObject(target, options);
     }
 
-    var keys = Object.keys(source);
-    for (var k = 0, kl = keys.length; k < kl; ++k) {
-        var key = keys[k];
-        var value = source[key];
+    const keys = Object.keys(source);
+    for (let i = 0; i < keys.length; ++i) {
+        const key = keys[i];
+        const value = source[key];
 
         if (!Object.prototype.hasOwnProperty.call(target, key)) {
             target[key] = value;
@@ -439,7 +452,8 @@ exports.decode = function (str) {
 
     try {
         return decodeURIComponent(str.replace(/\+/g, ' '));
-    } catch (e) {
+    }
+    catch (e) {
         return str;
     }
 };
@@ -456,9 +470,9 @@ exports.encode = function (str) {
         str = '' + str;
     }
 
-    var out = '';
-    for (var i = 0, il = str.length; i < il; ++i) {
-        var c = str.charCodeAt(i);
+    let out = '';
+    for (let i = 0; i < str.length; ++i) {
+        let c = str.charCodeAt(i);
 
         if (c === 0x2D || // -
             c === 0x2E || // .
@@ -468,28 +482,28 @@ exports.encode = function (str) {
             (c >= 0x41 && c <= 0x5A) || // a-z
             (c >= 0x61 && c <= 0x7A)) { // A-Z
 
-            out += str[i];
+            out = out + str[i];
             continue;
         }
 
         if (c < 0x80) {
-            out += internals.hexTable[c];
+            out = out + internals.hexTable[c];
             continue;
         }
 
         if (c < 0x800) {
-            out += internals.hexTable[0xC0 | (c >> 6)] + internals.hexTable[0x80 | (c & 0x3F)];
+            out = out + (internals.hexTable[0xC0 | (c >> 6)] + internals.hexTable[0x80 | (c & 0x3F)]);
             continue;
         }
 
         if (c < 0xD800 || c >= 0xE000) {
-            out += internals.hexTable[0xE0 | (c >> 12)] + internals.hexTable[0x80 | ((c >> 6) & 0x3F)] + internals.hexTable[0x80 | (c & 0x3F)];
+            out = out + (internals.hexTable[0xE0 | (c >> 12)] + internals.hexTable[0x80 | ((c >> 6) & 0x3F)] + internals.hexTable[0x80 | (c & 0x3F)]);
             continue;
         }
 
         ++i;
         c = 0x10000 + (((c & 0x3FF) << 10) | (str.charCodeAt(i) & 0x3FF));
-        out += internals.hexTable[0xF0 | (c >> 18)] + internals.hexTable[0x80 | ((c >> 12) & 0x3F)] + internals.hexTable[0x80 | ((c >> 6) & 0x3F)] + internals.hexTable[0x80 | (c & 0x3F)];
+        out = out + (internals.hexTable[0xF0 | (c >> 18)] + internals.hexTable[0x80 | ((c >> 12) & 0x3F)] + internals.hexTable[0x80 | ((c >> 6) & 0x3F)] + internals.hexTable[0x80 | (c & 0x3F)]);
     }
 
     return out;
@@ -504,7 +518,7 @@ exports.compact = function (obj, refs) {
     }
 
     refs = refs || [];
-    var lookup = refs.indexOf(obj);
+    const lookup = refs.indexOf(obj);
     if (lookup !== -1) {
         return refs[lookup];
     }
@@ -512,9 +526,9 @@ exports.compact = function (obj, refs) {
     refs.push(obj);
 
     if (Array.isArray(obj)) {
-        var compacted = [];
+        const compacted = [];
 
-        for (var i = 0, il = obj.length; i < il; ++i) {
+        for (let i = 0; i < obj.length; ++i) {
             if (typeof obj[i] !== 'undefined') {
                 compacted.push(obj[i]);
             }
@@ -523,9 +537,9 @@ exports.compact = function (obj, refs) {
         return compacted;
     }
 
-    var keys = Object.keys(obj);
-    for (i = 0, il = keys.length; i < il; ++i) {
-        var key = keys[i];
+    const keys = Object.keys(obj);
+    for (let i = 0; i < keys.length; ++i) {
+        const key = keys[i];
         obj[key] = exports.compact(obj[key], refs);
     }
 
