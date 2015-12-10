@@ -3,13 +3,13 @@
 
 // Load modules
 
-const Stringify = require('./stringify');
-const Parse = require('./parse');
+var Stringify = require('./stringify');
+var Parse = require('./parse');
 
 
 // Declare internals
 
-const internals = {};
+var internals = {};
 
 
 exports.stringify = Stringify;
@@ -20,12 +20,12 @@ exports.parse = Parse;
 
 // Load modules
 
-const Utils = require('./utils');
+var Utils = require('./utils');
 
 
 // Declare internals
 
-const internals = {
+var internals = {
     delimiter: '&',
     depth: 5,
     arrayLimit: 20,
@@ -39,12 +39,12 @@ const internals = {
 
 internals.parseValues = function (str, options) {
 
-    const obj = {};
-    const parts = str.split(options.delimiter, options.parameterLimit === Infinity ? undefined : options.parameterLimit);
+    var obj = {};
+    var parts = str.split(options.delimiter, options.parameterLimit === Infinity ? undefined : options.parameterLimit);
 
     for (var i = 0; i < parts.length; ++i) {
-        const part = parts[i];
-        const pos = part.indexOf(']=') === -1 ? part.indexOf('=') : part.indexOf(']=') + 1;
+        var part = parts[i];
+        var pos = part.indexOf(']=') === -1 ? part.indexOf('=') : part.indexOf(']=') + 1;
 
         if (pos === -1) {
             obj[Utils.decode(part)] = '';
@@ -54,8 +54,8 @@ internals.parseValues = function (str, options) {
             }
         }
         else {
-            const key = Utils.decode(part.slice(0, pos));
-            const val = Utils.decode(part.slice(pos + 1));
+            var key = Utils.decode(part.slice(0, pos));
+            var val = Utils.decode(part.slice(pos + 1));
 
             if (!Object.prototype.hasOwnProperty.call(obj, key)) {
                 obj[key] = val;
@@ -76,7 +76,7 @@ internals.parseObject = function (chain, val, options) {
         return val;
     }
 
-    const root = chain.shift();
+    var root = chain.shift();
 
     var obj;
     if (root === '[]') {
@@ -85,9 +85,9 @@ internals.parseObject = function (chain, val, options) {
     }
     else {
         obj = options.plainObjects ? Object.create(null) : {};
-        const cleanRoot = root[0] === '[' && root[root.length - 1] === ']' ? root.slice(1, root.length - 1) : root;
-        const index = parseInt(cleanRoot, 10);
-        const indexString = '' + index;
+        var cleanRoot = root[0] === '[' && root[root.length - 1] === ']' ? root.slice(1, root.length - 1) : root;
+        var index = parseInt(cleanRoot, 10);
+        var indexString = '' + index;
         if (!isNaN(index) &&
             root !== cleanRoot &&
             indexString === cleanRoot &&
@@ -121,8 +121,8 @@ internals.parseKeys = function (key, val, options) {
 
     // The regex chunks
 
-    const parent = /^([^\[\]]*)/;
-    const child = /(\[[^\[\]]*\])/g;
+    var parent = /^([^\[\]]*)/;
+    var child = /(\[[^\[\]]*\])/g;
 
     // Get the parent
 
@@ -130,7 +130,7 @@ internals.parseKeys = function (key, val, options) {
 
     // Stash the parent if it exists
 
-    const keys = [];
+    var keys = [];
     if (segment[1]) {
         // If we aren't using plain objects, optionally prefix keys
         // that would overwrite object prototype properties
@@ -191,15 +191,15 @@ module.exports = function (str, options) {
         return options.plainObjects ? Object.create(null) : {};
     }
 
-    const tempObj = typeof str === 'string' ? internals.parseValues(str, options) : str;
+    var tempObj = typeof str === 'string' ? internals.parseValues(str, options) : str;
     var obj = options.plainObjects ? Object.create(null) : {};
 
     // Iterate over the keys and setup the new object
 
-    const keys = Object.keys(tempObj);
+    var keys = Object.keys(tempObj);
     for (var i = 0; i < keys.length; ++i) {
-        const key = keys[i];
-        const newObj = internals.parseKeys(key, tempObj[key], options);
+        var key = keys[i];
+        var newObj = internals.parseKeys(key, tempObj[key], options);
         obj = Utils.merge(obj, newObj, options);
     }
 
@@ -211,12 +211,12 @@ module.exports = function (str, options) {
 
 // Load modules
 
-const Utils = require('./utils');
+var Utils = require('./utils');
 
 
 // Declare internals
 
-const internals = {
+var internals = {
     delimiter: '&',
     arrayPrefixGenerators: {
         brackets: function (prefix, key) {
@@ -278,12 +278,12 @@ internals.stringify = function (obj, prefix, generateArrayPrefix, strictNullHand
         objKeys = filter;
     }
     else {
-        const keys = Object.keys(obj);
+        var keys = Object.keys(obj);
         objKeys = sort ? keys.sort(sort) : keys;
     }
 
     for (var i = 0; i < objKeys.length; ++i) {
-        const key = objKeys[i];
+        var key = objKeys[i];
 
         if (skipNulls &&
             obj[key] === null) {
@@ -306,11 +306,11 @@ internals.stringify = function (obj, prefix, generateArrayPrefix, strictNullHand
 module.exports = function (obj, options) {
 
     options = options || {};
-    const delimiter = typeof options.delimiter === 'undefined' ? internals.delimiter : options.delimiter;
-    const strictNullHandling = typeof options.strictNullHandling === 'boolean' ? options.strictNullHandling : internals.strictNullHandling;
-    const skipNulls = typeof options.skipNulls === 'boolean' ? options.skipNulls : internals.skipNulls;
-    const encode = typeof options.encode === 'boolean' ? options.encode : internals.encode;
-    const sort = typeof options.sort === 'function' ? options.sort : null;
+    var delimiter = typeof options.delimiter === 'undefined' ? internals.delimiter : options.delimiter;
+    var strictNullHandling = typeof options.strictNullHandling === 'boolean' ? options.strictNullHandling : internals.strictNullHandling;
+    var skipNulls = typeof options.skipNulls === 'boolean' ? options.skipNulls : internals.skipNulls;
+    var encode = typeof options.encode === 'boolean' ? options.encode : internals.encode;
+    var sort = typeof options.sort === 'function' ? options.sort : null;
     var objKeys;
     var filter;
     if (typeof options.filter === 'function') {
@@ -340,7 +340,7 @@ module.exports = function (obj, options) {
         arrayFormat = 'indices';
     }
 
-    const generateArrayPrefix = internals.arrayPrefixGenerators[arrayFormat];
+    var generateArrayPrefix = internals.arrayPrefixGenerators[arrayFormat];
 
     if (!objKeys) {
         objKeys = Object.keys(obj);
@@ -351,7 +351,7 @@ module.exports = function (obj, options) {
     }
 
     for (var i = 0; i < objKeys.length; ++i) {
-        const key = objKeys[i];
+        var key = objKeys[i];
 
         if (skipNulls &&
             obj[key] === null) {
@@ -373,12 +373,12 @@ module.exports = function (obj, options) {
 
 // Declare internals
 
-const internals = {};
+var internals = {};
 
 
 internals.hexTable = function () {
 
-    const array = new Array(256);
+    var array = new Array(256);
     for (var i = 0; i < 256; ++i) {
         array[i] = '%' + ((i < 16 ? '0' : '') + i.toString(16)).toUpperCase();
     }
@@ -389,7 +389,7 @@ internals.hexTable = function () {
 
 exports.arrayToObject = function (source, options) {
 
-    const obj = options.plainObjects ? Object.create(null) : {};
+    var obj = options.plainObjects ? Object.create(null) : {};
     for (var i = 0; i < source.length; ++i) {
         if (typeof source[i] !== 'undefined') {
             obj[i] = source[i];
@@ -431,10 +431,10 @@ exports.merge = function (target, source, options) {
         target = exports.arrayToObject(target, options);
     }
 
-    const keys = Object.keys(source);
+    var keys = Object.keys(source);
     for (var i = 0; i < keys.length; ++i) {
-        const key = keys[i];
-        const value = source[key];
+        var key = keys[i];
+        var value = source[key];
 
         if (!Object.prototype.hasOwnProperty.call(target, key)) {
             target[key] = value;
@@ -518,7 +518,7 @@ exports.compact = function (obj, refs) {
     }
 
     refs = refs || [];
-    const lookup = refs.indexOf(obj);
+    var lookup = refs.indexOf(obj);
     if (lookup !== -1) {
         return refs[lookup];
     }
@@ -526,7 +526,7 @@ exports.compact = function (obj, refs) {
     refs.push(obj);
 
     if (Array.isArray(obj)) {
-        const compacted = [];
+        var compacted = [];
 
         for (var i = 0; i < obj.length; ++i) {
             if (typeof obj[i] !== 'undefined') {
@@ -537,9 +537,9 @@ exports.compact = function (obj, refs) {
         return compacted;
     }
 
-    const keys = Object.keys(obj);
+    var keys = Object.keys(obj);
     for (var i = 0; i < keys.length; ++i) {
-        const key = keys[i];
+        var key = keys[i];
         obj[key] = exports.compact(obj[key], refs);
     }
 
